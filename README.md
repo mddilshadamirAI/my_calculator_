@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧮 DILSHAD'S CALC PRO
+# 🧮 DILSHAD'S CALCULATOR 
 
 ### Scientific Precision | Stealth Security | Progressive Web Architecture
 
