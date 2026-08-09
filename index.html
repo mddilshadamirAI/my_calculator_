@@ -10,7 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dilshad's Calc Pro</title>
     <style>
-        /* Exact Deep Background from Screenshot */
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
             display: flex; 
@@ -22,7 +21,6 @@
             overflow: hidden;
         }
 
-        /* Clean Glassmorphic Container */
         .calc-card { 
             background: rgba(21, 32, 54, 0.6); 
             backdrop-filter: blur(20px);
@@ -57,7 +55,6 @@
             text-align: left;
         }
 
-        /* MULTI-BUTTON UTILITY ROW FOR PERFECT MOBILE SPACING */
         .action-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -97,7 +94,6 @@
         }
         .btn-revise:hover { background: #38bdf8; color: #0d1527; }
 
-        /* Display Panel matching the Screenshot */
         .display-container {
             background: rgba(9, 15, 29, 0.7);
             border-radius: 18px;
@@ -107,17 +103,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-        }
-        .display-container {
-            background: rgba(9, 15, 29, 0.7);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 20px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            overflow: hidden; /* Hides default ugly scrollbars */
+            overflow: hidden;
             position: relative;
         }
 
@@ -131,24 +117,13 @@
             outline: none;
             font-family: 'Segoe UI', sans-serif;
             white-space: nowrap;
-            overflow-x: auto; /* Allows smooth programmatic scrolling */
-            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            overflow-x: auto;
+            scrollbar-width: none;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
         .calc-display::-webkit-scrollbar {
-            display: none; /* Hide scrollbar for Chrome, Safari, Edge */
-        }
-
-        #display { 
-            width: 100%; 
-            font-size: 34px; 
-            text-align: right; 
-            background: transparent;
-            color: #38bdf8;
-            border: none;
-            outline: none;
-            font-family: 'Segoe UI', sans-serif;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            display: none;
         }
 
         .animate-pop {
@@ -160,7 +135,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* 🔬 EXPANDABLE SCIENTIFIC EXTENSION PANEL */
         .scientific-panel {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -185,7 +159,6 @@
             border-radius: 12px;
         }
 
-        /* 📜 HISTORY COMPONENT LOG PANEL DRAWER */
         .history-panel {
             max-height: 0;
             overflow: hidden;
@@ -269,14 +242,12 @@
             padding: 20px 0;
         }
 
-        /* 4-Column Grid for All Rows */
         .buttons { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 12px; 
         }
 
-        /* Button Styling matching the Screenshot Layout */
         button { 
             padding: 16px 0;
             font-size: 22px; 
@@ -291,13 +262,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Glowing Effects on Tap */
         button:active { 
             transform: scale(0.92);
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
         }
 
-        /* Specific Button Colors from your Screenshot */
         .btn-action {
             background: #2e3648;
             color: #ffffff;
@@ -316,7 +285,6 @@
             box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
         }
 
-        /* Hidden Vault Styles */
         .vault-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -421,7 +389,7 @@
     </div>
     
     <div class="display-container" id="displayContainer">
-        <div id="display" class="calc-display" contenteditable="false">0</div>
+        <div id="display" class="calc-display">0</div>
     </div>
 
     <div class="history-panel" id="historyPanel">
@@ -500,17 +468,13 @@
     let calcTitle = document.getElementById('calc-title');
     let clearOnNextInput = false;
 
-    // AUDIO & MATH TRACKERS
     let lastActiveFormula = ""; 
     let finalCalculationResult = "";
 
-    // LOCAL DATA LOG MATRIX
     let historyLog = JSON.parse(localStorage.getItem('calcHistory')) || [];
-
     let vaultCode = localStorage.getItem('vaultCode') || null;
     let equalClickCount = 0;
 
-    // 🔬 ADVANCED MATHEMATICAL EXECUTIONS FOR EVAL ENGINE
     const sin = (deg) => Math.sin(deg * Math.PI / 180);
     const cos = (deg) => Math.cos(deg * Math.PI / 180);
     const tan = (deg) => Math.tan(deg * Math.PI / 180);
@@ -525,67 +489,73 @@
         return r;
     };
 
-    // Initialize layout setup configurations
     if (!vaultCode) {
         calcTitle.innerText = "Set Passcode & Press =";
     }
-    renderHistory(); // Populate history on start
+    renderHistory();
 
-    // 🔬 Drawer Panel Controls
+    function updateDisplayValue(newValue) {
+        display.innerText = newValue === '' ? '0' : newValue;
+        display.scrollLeft = display.scrollWidth;
+    }
+
     function toggleScientificPanel() {
-        document.getElementById('historyPanel').classList.remove('open'); // Close history if open
+        document.getElementById('historyPanel').classList.remove('open');
         document.getElementById('scientificPanel').classList.toggle('open');
     }
 
     function toggleHistoryPanel() {
-        document.getElementById('scientificPanel').classList.remove('open'); // Close scientific if open
+        document.getElementById('scientificPanel').classList.remove('open');
         document.getElementById('historyPanel').classList.toggle('open');
     }
 
     function appendScientific(val) {
         display.classList.remove('animate-pop');
         if (clearOnNextInput) {
-            display.value = '';
+            updateDisplayValue('');
             clearOnNextInput = false;
         }
-        display.value += val;
+        let currentText = display.innerText === '0' ? '' : display.innerText;
+        updateDisplayValue(currentText + val);
         equalClickCount = 0;
     }
 
     function appendNumber(value) {
         display.classList.remove('animate-pop');
         if (clearOnNextInput) {
-            display.value = '';
+            updateDisplayValue('');
             clearOnNextInput = false;
         }
+        let currentText = display.innerText === '0' ? '' : display.innerText;
         if (value === '.') {
-            const parts = display.value.split(/[\+\-\*\/%^,()]/);
+            const parts = currentText.split(/[\+\-\*\/%^,()]/);
             const currentPart = parts[parts.length - 1];
             if (currentPart.includes('.')) return;
         }
-        display.value += value;
+        updateDisplayValue(currentText + value);
         equalClickCount = 0;
     }
 
     function appendOperator(op) {
         display.classList.remove('animate-pop');
         if (clearOnNextInput) clearOnNextInput = false;
-        if (display.value === '') {
-            if (op === '-') display.value += op;
+        let currentText = display.innerText === '0' ? '' : display.innerText;
+        if (currentText === '') {
+            if (op === '-') updateDisplayValue(op);
             return;
         }
-        let lastChar = display.value.slice(-1);
+        let lastChar = currentText.slice(-1);
         if (['+', '-', '*', '/', '%'].includes(lastChar)) {
-            display.value = display.value.slice(0, -1) + op;
+            updateDisplayValue(currentText.slice(0, -1) + op);
         } else {
-            display.value += op;
+            updateDisplayValue(currentText + op);
         }
         equalClickCount = 0;
     }
 
     function clearDisplay() {
         display.classList.remove('animate-pop');
-        display.value = '';
+        updateDisplayValue('');
         lastActiveFormula = "";
         finalCalculationResult = "";
         equalClickCount = 0;
@@ -593,14 +563,15 @@
 
     function deleteLast() {
         display.classList.remove('animate-pop');
-        display.value = display.value.slice(0, -1);
+        let currentText = display.innerText;
+        updateDisplayValue(currentText.slice(0, -1));
         equalClickCount = 0;
     }
 
     function calculate() {
-        if (display.value === '') return;
+        if (display.innerText === '' || display.innerText === '0') return;
         
-        let currentInput = display.value;
+        let currentInput = display.innerText;
         let lastChar = currentInput.slice(-1);
         if (['+', '-', '*', '/', '%'].includes(lastChar)) {
             currentInput = currentInput.slice(0, -1);
@@ -609,7 +580,7 @@
         if (!vaultCode && !isNaN(currentInput)) {
             vaultCode = currentInput;
             localStorage.setItem('vaultCode', vaultCode);
-            display.value = "Code Set!";
+            updateDisplayValue("Code Set!");
             clearOnNextInput = true;
             calcTitle.innerText = "Dilshad's Calc Pro";
             return;
@@ -644,17 +615,16 @@
             }
             
             finalCalculationResult = result;
-            display.value = result;
+            updateDisplayValue(result);
             clearOnNextInput = true;
 
-            // 📜 SAVE SUCCESSFUL RUN INTO HISTORY MATRIX ARRAY
             saveToHistory(lastActiveFormula, finalCalculationResult);
 
             display.classList.remove('animate-pop');
             void display.offsetWidth; 
             display.classList.add('animate-pop');
         } catch (error) {
-            display.value = "Error";
+            updateDisplayValue("Error");
             lastActiveFormula = "";
             finalCalculationResult = "";
             clearOnNextInput = true;
@@ -662,15 +632,13 @@
         }
     }
 
-    // 📜 HISTORY MATRIX CORE UTILITIES
     function saveToHistory(formula, result) {
-        // Prevent duplicate consecutive entries
         if(historyLog.length > 0 && historyLog[0].formula === formula) return;
 
         historyLog.unshift({ formula: formula, result: result });
         
         if (historyLog.length > 100) {
-            historyLog.pop(); // Cap length at 100 rows strict maximum
+            historyLog.pop();
         }
         
         localStorage.setItem('calcHistory', JSON.stringify(historyLog));
@@ -700,10 +668,10 @@
     }
 
     function loadHistoryItem(value) {
-        display.value = value;
+        updateDisplayValue(value);
         finalCalculationResult = value;
         lastActiveFormula = "";
-        clearOnNextInput = false; // Lets them write equations using the loaded result
+        clearOnNextInput = false;
     }
 
     function clearHistory() {
@@ -712,15 +680,14 @@
         renderHistory();
     }
 
-    // 🔊 AUDIO ENGINE PRE-PROCESSING INTERFACES
     function reviseCalculation() {
         window.speechSynthesis.cancel();
         let contextToSpeak = "";
 
         if (lastActiveFormula !== "") {
             contextToSpeak = lastActiveFormula + " equals " + finalCalculationResult;
-        } else if (display.value !== "" && display.value !== "Error" && display.value !== "Code Set!") {
-            contextToSpeak = display.value;
+        } else if (display.innerText !== "" && display.innerText !== "Error" && display.innerText !== "Code Set!") {
+            contextToSpeak = display.innerText;
         } else {
             contextToSpeak = "Zero";
         }
@@ -753,7 +720,6 @@
         window.speechSynthesis.speak(voiceUtterance);
     }
 
-    // 🔒 Vault Controls
     function openVault() {
         document.getElementById('vaultOverlay').classList.add('active');
         renderGallery();
