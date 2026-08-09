@@ -108,6 +108,36 @@
             align-items: center;
             justify-content: flex-end;
         }
+        .display-container {
+            background: rgba(9, 15, 29, 0.7);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden; /* Hides default ugly scrollbars */
+            position: relative;
+        }
+
+        .calc-display {
+            width: 100%;
+            font-size: 34px;
+            text-align: right;
+            background: transparent;
+            color: #38bdf8;
+            border: none;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+            white-space: nowrap;
+            overflow-x: auto; /* Allows smooth programmatic scrolling */
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+        }
+
+        .calc-display::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari, Edge */
+        }
 
         #display { 
             width: 100%; 
@@ -390,8 +420,8 @@
         <button class="btn-revise" onclick="reviseCalculation()">🔊 Revise</button>
     </div>
     
-    <div class="display-container">
-        <input type="text" id="display" readonly placeholder="0">
+    <div class="display-container" id="displayContainer">
+        <div id="display" class="calc-display" contenteditable="false">0</div>
     </div>
 
     <div class="history-panel" id="historyPanel">
